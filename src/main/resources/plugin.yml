@@ -1,0 +1,79 @@
+name: GodllyCore
+version: '2.1.0'
+main: dev.casperschotman.godllyCore.GodllyCore
+api-version: '1.20'
+author: ItzRepsac_ / Casper
+commands:
+  core:
+    description: Main command for GodllyCore plugin.
+    usage: /<command> <subcommand>
+    aliases: [core]
+  fly:
+    description: Toggle flight mode.
+    usage: /fly
+    permission: godllycore.fly
+  gmc:
+    usage: /gmc
+    permission: godllycore.gamemode.creative
+    description: Set gamemode to creative
+  gms:
+    usage: /gmc
+    permission: godllycore.gamemode.survival
+    description: Set gamemode to survival
+  gmsp:
+    usage: /gmc
+    permission: godllycore.gamemode.spectator
+    description: Set gamemode to spectator
+  gma:
+    usage: /gmc
+    permission: godllycore.gamemode.adventure
+    description: Set gamemode to adventure
+  tp:
+    description: Teleport to another player
+    usage: /tp <player>
+    permission: godllybox.teleport.tp
+    permission-message: You do not have permission to use this command!
+  tphere:
+    description: Teleport a player to you
+    usage: /tphere <player>
+    permission: godllybox.teleport.tphere
+    permission-message: You do not have permission to use this command!
+  tpall:
+    description: Teleport all players to you
+    usage: /tpall
+    permission: godllybox.teleport.tpall
+    permission-message: You do not have permission to use this command!
+  tpa:
+    description: Send a teleport request to another player
+    usage: /tpa <player>
+    permission: godllybox.teleport.tpa
+    permission-message: You do not have permission to use this command!
+  tpaccept:
+    description: Accept a teleport request
+    usage: /tpaccept
+    permission: godllybox.teleport.tpaccept
+    permission-message: You do not have permission to use this command!
+  tpadeny:
+    description: Deny a teleport request
+    usage: /tpadeny
+    permission: godllybox.teleport.tpadeny
+    permission-message: You do not have permission to use this command!
+  drop:
+    description: Allows you to drop items for a limited time.
+    usage: /drop
+  vanish:
+    description: Toggles vanish mode for the player.
+    usage: /vanish
+    permission: godllybox.vanish
+    permission-message: You do not have permission to use this command.
+
+permissions:
+  godllybox.vanish:
+    description: Allows the player to vanish.
+    default: op
+  godllybox.vanish.see:
+    description: Allows the player to see vanished players.
+    default: op
+  godllybox.viewplugins:
+    description: Allows players to view plugin-related commands like /pl, /plugins, /reload, etc.
+    default: op
