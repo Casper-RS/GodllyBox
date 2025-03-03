@@ -29,7 +29,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
         // Check for specific permissions for tp, tphere, and tpall
         switch (command.getName().toLowerCase()) {
             case "tp":
-                if (!player.hasPermission("godllybox.teleport.tp") && !player.hasPermission("godllybox.teleport.*")) {
+                if (!player.hasPermission("godllycore.teleport.tp") && !player.hasPermission("godllycore.teleport.*")) {
                     player.sendMessage(getPrefix() + "§cYou do not have permission to use this command!");
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
                     return true;
@@ -37,7 +37,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                 break;
 
             case "tphere":
-                if (!player.hasPermission("godllybox.teleport.tphere") && !player.hasPermission("godllybox.teleport.*")) {
+                if (!player.hasPermission("godllycore.teleport.tphere") && !player.hasPermission("godllycore.teleport.*")) {
                     player.sendMessage(getPrefix() + "§cYou do not have permission to use this command!");
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
                     return true;
@@ -45,7 +45,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                 break;
 
             case "tpall":
-                if (!player.hasPermission("godllybox.teleport.tpall") && !player.hasPermission("godllybox.teleport.*")) {
+                if (!player.hasPermission("godllycore.teleport.tpall") && !player.hasPermission("godllycore.teleport.*")) {
                     player.sendMessage(getPrefix() + "§cYou do not have permission to use this command!");
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
                     return true;

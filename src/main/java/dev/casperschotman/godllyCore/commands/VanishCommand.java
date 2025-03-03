@@ -31,7 +31,7 @@ public class VanishCommand implements CommandExecutor {
             return true;
         }
 
-        if (!player.hasPermission("godllybox.vanish")) {
+        if (!player.hasPermission("godllycore.vanish")) {
             player.sendMessage(getPrefix() + "§cYou don't have permission to use this command.");
             return true;
         }
@@ -47,7 +47,7 @@ public class VanishCommand implements CommandExecutor {
             // Vanish the player
             vanishedPlayers.add(player);
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (!onlinePlayer.hasPermission("godllybox.vanish.see")) {
+                if (!onlinePlayer.hasPermission("godllycore.vanish.see")) {
                     onlinePlayer.hidePlayer(plugin, player);
                 }
             }

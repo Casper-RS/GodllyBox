@@ -18,8 +18,13 @@ public class CoreTabCompleter implements TabCompleter {
             // Add "reload" as a possible subcommand
             completions.add("reload");
             completions.add("info");
+            completions.add("restart");
         }
-
+        if (args.length == 2) {
+            completions.add("5");
+            completions.add("60");
+            completions.add("120");
+        }
         return completions;
     }
 }

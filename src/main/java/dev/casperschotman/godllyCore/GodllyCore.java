@@ -1,10 +1,9 @@
 package dev.casperschotman.godllyCore;
 
 import dev.casperschotman.godllyCore.commands.*;
-import dev.casperschotman.godllyCore.listeners.CommandListener;
+import dev.casperschotman.godllyCore.listeners.*;
+import dev.casperschotman.godllyCore.tabcompletion.*;
 
-import dev.casperschotman.godllyCore.listeners.ItemDropListener;
-import dev.casperschotman.godllyCore.tabcompletion.CoreTabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @SuppressWarnings("unused")
@@ -26,6 +25,7 @@ public final class GodllyCore extends JavaPlugin {
 
         /////// --- FLY COMMAND --- ///////
         getCommand("fly").setExecutor(new FlyCommand());
+        getCommand("fly").setTabCompleter(new FlyTabCompleter());
 
         ///// -- GAMEMODE COMMANDS -- /////
         getCommand("gmc").setExecutor(new GameModeCommand());
@@ -48,6 +48,7 @@ public final class GodllyCore extends JavaPlugin {
         /////// -- DROP COMMAND -- ///////
         DropCommand dropCommand = new DropCommand(this);
         getCommand("drop").setExecutor(dropCommand);
+        getCommand("drop").setTabCompleter(new DropTabCompleter());
 
         ////// -- EVENT LISTENERS -- /////
         getServer().getPluginManager().registerEvents(new CommandListener(), this);
@@ -57,6 +58,7 @@ public final class GodllyCore extends JavaPlugin {
         Core coreCommands = new Core(this);
         getCommand("core").setExecutor(coreCommands);
         getCommand("core").setTabCompleter(new CoreTabCompleter());
+        getCommand("core").setExecutor(coreCommands);
 
         /////// -- VANISH COMMANDS -- ///////
         getCommand("vanish").setExecutor(new VanishCommand(this));

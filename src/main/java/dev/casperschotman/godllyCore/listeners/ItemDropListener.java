@@ -23,6 +23,11 @@ public class ItemDropListener implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
+        // Check if the player has bypass enabled
+        if (dropCommand.hasBypass(playerUUID)) {
+            return; // Allow the item drop
+        }
+
         // Check if the player has an active cooldown
         long cooldownTime = dropCommand.getPlayerCooldown(playerUUID);
 

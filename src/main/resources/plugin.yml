@@ -1,17 +1,19 @@
 name: GodllyCore
-version: '2.1.0'
+version: '2.2.0'
 main: dev.casperschotman.godllyCore.GodllyCore
 api-version: '1.20'
 author: ItzRepsac_ / Casper
 commands:
   core:
     description: Main command for GodllyCore plugin.
+    permission: godllycore.admin
     usage: /<command> <subcommand>
     aliases: [core]
   fly:
-    description: Toggle flight mode.
-    usage: /fly
+    description: Allows players to toggle fly mode and set fly speed
+    usage: /<command> [speed <value> | speed reset]
     permission: godllycore.fly
+    permission-message: You do not have permission to use the fly command.
   gmc:
     usage: /gmc
     permission: godllycore.gamemode.creative
@@ -31,49 +33,67 @@ commands:
   tp:
     description: Teleport to another player
     usage: /tp <player>
-    permission: godllybox.teleport.tp
+    permission: godllycore.teleport.tp
     permission-message: You do not have permission to use this command!
   tphere:
     description: Teleport a player to you
     usage: /tphere <player>
-    permission: godllybox.teleport.tphere
+    permission: godllycore.teleport.tphere
     permission-message: You do not have permission to use this command!
   tpall:
     description: Teleport all players to you
     usage: /tpall
-    permission: godllybox.teleport.tpall
+    permission: godllycore.teleport.tpall
     permission-message: You do not have permission to use this command!
   tpa:
     description: Send a teleport request to another player
     usage: /tpa <player>
-    permission: godllybox.teleport.tpa
+    permission: godllycore.teleport.tpa
     permission-message: You do not have permission to use this command!
   tpaccept:
     description: Accept a teleport request
     usage: /tpaccept
-    permission: godllybox.teleport.tpaccept
+    permission: godllycore.teleport.tpaccept
     permission-message: You do not have permission to use this command!
   tpadeny:
     description: Deny a teleport request
     usage: /tpadeny
-    permission: godllybox.teleport.tpadeny
+    permission: godllycore.teleport.tpadeny
     permission-message: You do not have permission to use this command!
   drop:
-    description: Allows you to drop items for a limited time.
-    usage: /drop
+    description: Command to toggle cooldown bypass and drop items
+    usage: /<command> [toggle]
   vanish:
     description: Toggles vanish mode for the player.
     usage: /vanish
-    permission: godllybox.vanish
+    permission: godllycore.vanish
     permission-message: You do not have permission to use this command.
 
 permissions:
-  godllybox.vanish:
+  godllycore.fly:
+    description: Allows players to toggle fly mode
+    default: op
+  godllycore.fly.speed:
+    description: Allows players to set their fly speed
+    default: op
+  godllycore.vanish:
     description: Allows the player to vanish.
     default: op
-  godllybox.vanish.see:
+  godllycore.vanish.see:
     description: Allows the player to see vanished players.
-    default: op
-  godllybox.viewplugins:
+    default: false
+  godllycore.viewplugins:
     description: Allows players to view plugin-related commands like /pl, /plugins, /reload, etc.
+    default: op
+  godllycore.core:
+    description: Allows the player to execute the /godllycore command and its subcommands
+    default: op
+  godllycore.reload:
+    description: Allows the player to reload the plugin configuration
+    default: op
+  godllycore.restart:
+    description: Allows the player to initiate a server restart with a countdown
+    default: op
+  godllycore.drop.bypass:
+    description: Allows staff to bypass the drop cooldown
     default: op
