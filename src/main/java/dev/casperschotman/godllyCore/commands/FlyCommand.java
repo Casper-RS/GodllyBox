@@ -2,6 +2,7 @@ package dev.casperschotman.godllyCore.commands;
 
 import static dev.casperschotman.godllyCore.messages.PrefixHandler.getPrefix;
 
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -41,6 +42,7 @@ public class FlyCommand implements CommandExecutor {
 
                     // Validate the speed value (set a range from 0.1 to 10)
                     if (speed < 0.1 || speed > 5) {
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                         player.sendMessage(getPrefix() + "§cInvalid speed value. Please choose a value between 0.1 and 5.");
                         return false;
                     }
@@ -51,12 +53,14 @@ public class FlyCommand implements CommandExecutor {
                     return true;
 
                 } catch (NumberFormatException e) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                     player.sendMessage(getPrefix() + "§cInvalid number format for speed. Please enter a valid number.");
                     return false;
                 }
             }
 
             // If the argument is unknown
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
             player.sendMessage(getPrefix() + "§cUnknown subcommand. Usage: /fly [speed <value> | speed reset]");
             return false;
 

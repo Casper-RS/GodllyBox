@@ -1,5 +1,6 @@
 package dev.casperschotman.godllyCore.commands;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,6 +33,7 @@ public class DropCommand implements CommandExecutor {
         if (args.length > 0 && args[0].equalsIgnoreCase("toggle")) {
             if (!player.hasPermission("godllycore.drop.bypass")) {
                 player.sendMessage(getPrefix() + "§cYou don't have permission to toggle drop cooldown.");
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                 return true;
             }
 

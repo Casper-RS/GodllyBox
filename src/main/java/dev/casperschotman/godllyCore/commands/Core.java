@@ -1,9 +1,11 @@
 package dev.casperschotman.godllyCore.commands;
-
 import dev.casperschotman.godllyCore.GodllyCore;
+
+import dev.casperschotman.godllyCore.listeners.FullInventoryListener;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,16 +13,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 
 import static dev.casperschotman.godllyCore.messages.PrefixHandler.getPrefix;
 
 public class Core implements CommandExecutor {
 
     private final GodllyCore plugin;
+    private final FullInventoryListener fullInventoryListener;
 
-    public Core(GodllyCore plugin) {
+    public Core(GodllyCore plugin, FullInventoryListener fullInventoryListener) {
         this.plugin = plugin;
+        this.fullInventoryListener = fullInventoryListener;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class Core implements CommandExecutor {
         return true;
     }
 
-    private void handleReload(CommandSender sender) {
+    public void handleReload(CommandSender sender) {
         if (sender instanceof Player player) {
             if (!player.hasPermission("godllycore.reload")) {
                 player.sendMessage(getPrefix() + "§cYou don't have permission to reload the configuration.");
@@ -63,6 +66,7 @@ public class Core implements CommandExecutor {
 
         // Reload the configuration
         plugin.reloadConfig();
+        fullInventoryListener.loadConfig();
         sender.sendMessage(getPrefix() + "§aConfiguration reloaded successfully!");
     }
 
@@ -86,6 +90,7 @@ public class Core implements CommandExecutor {
         }
 
         if (!player.hasPermission("godllybox.restart")) {
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
             player.sendMessage(getPrefix() + "§cYou don't have permission to restart the server.");
             return;
         }
@@ -94,10 +99,11 @@ public class Core implements CommandExecutor {
         try {
             time = Integer.parseInt(timeArg);
         } catch (NumberFormatException e) {
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
             player.sendMessage(getPrefix() + "§cInvalid time format. Please enter a valid number.");
             return;
         }
-
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
         player.sendMessage(getPrefix() + "§aThe server will restart in " + time + " seconds.");
 
         new BukkitRunnable() {
@@ -118,6 +124,7 @@ public class Core implements CommandExecutor {
                     cancel();
                 } else {
                     for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
                         p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(getPrefix() + "§erestarting in §6" + countdown + "§e seconds..."));
                     }
                     countdown--;

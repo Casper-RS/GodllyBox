@@ -15,21 +15,21 @@ commands:
     permission: godllycore.fly
     permission-message: You do not have permission to use the fly command.
   gmc:
-    usage: /gmc
+    description: Set game mode to Creative
+    usage: /gmc [player]
     permission: godllycore.gamemode.creative
-    description: Set gamemode to creative
   gms:
-    usage: /gmc
+    description: Set game mode to Survival
+    usage: /gms [player]
     permission: godllycore.gamemode.survival
-    description: Set gamemode to survival
   gmsp:
-    usage: /gmc
+    description: Set game mode to Spectator
+    usage: /gmsp [player]
     permission: godllycore.gamemode.spectator
-    description: Set gamemode to spectator
   gma:
-    usage: /gmc
+    description: Set game mode to Adventure
+    usage: /gma [player]
     permission: godllycore.gamemode.adventure
-    description: Set gamemode to adventure
   tp:
     description: Teleport to another player
     usage: /tp <player>
@@ -68,7 +68,10 @@ commands:
     usage: /vanish
     permission: godllycore.vanish
     permission-message: You do not have permission to use this command.
-
+  toggleinvfull:
+    description: Toggle inventory full title notification
+    usage: /invfulltoggle
+    permission: godllycore.toggleinvfull
 permissions:
   godllycore.fly:
     description: Allows players to toggle fly mode
@@ -97,3 +100,24 @@ permissions:
   godllycore.drop.bypass:
     description: Allows staff to bypass the drop cooldown
     default: op
+  godllycore.gamemode.*:
+    description: Allows access to all gamemode commands
+    default: op
+  godllycore.gamemode.creative:
+    description: Allows setting gamemode to Creative
+    default: op
+  godllycore.gamemode.survival:
+    description: Allows setting gamemode to Survival
+    default: op
+  godllycore.gamemode.spectator:
+    description: Allows setting gamemode to Spectator
+    default: op
+  godllycore.gamemode.adventure:
+    description: Allows setting gamemode to Adventure
+    default: op
+  godllycore.gamemode.others:
+    description: Allows setting another player's gamemode
+    default: op
+  godllycore.toggleinvfull:
+    description: Allows players to toggle inventory full notification
+    default: true

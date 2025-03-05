@@ -1,2 +1,7 @@
-# drop cooldown
+# Drop Cooldown in seconds.
 drop-cooldown: 30
+
+# The cooldown for inventory full title.
+# To prevent players not getting spammed with titles.
+# Cooldown in milliseconds (default: 5 seconds)
+inv-full-message-cooldown: 5000

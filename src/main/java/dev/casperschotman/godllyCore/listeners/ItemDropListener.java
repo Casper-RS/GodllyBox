@@ -2,6 +2,7 @@ package dev.casperschotman.godllyCore.listeners;
 
 import static dev.casperschotman.godllyCore.messages.PrefixHandler.getPrefix;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,7 +39,7 @@ public class ItemDropListener implements Listener {
 
         // If the cooldown has expired, cancel the item drop and send a message
         event.setCancelled(true);
-        player.sendMessage(" ");
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
         player.sendMessage(getPrefix() + "§cYou can't drop items right now.");
         player.sendMessage(getPrefix() + "§cUse §4/drop§c to enable item dropping.");
     }

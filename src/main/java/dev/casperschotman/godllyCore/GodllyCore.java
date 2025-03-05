@@ -17,10 +17,12 @@ public final class GodllyCore extends JavaPlugin {
     public static final String PURPLE = "\u001B[35m";
     public static final String CYAN = "\u001B[36m";
 
+    public FullInventoryListener fullInventoryListener;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        getLogger().info("GodllyCore made by ItzRepsac_");
         getLogger().info(BLUE + "GodllyCore" + GREEN + " has been enabled!" + RESET);
 
         /////// --- FLY COMMAND --- ///////
@@ -28,10 +30,16 @@ public final class GodllyCore extends JavaPlugin {
         getCommand("fly").setTabCompleter(new FlyTabCompleter());
 
         ///// -- GAMEMODE COMMANDS -- /////
-        getCommand("gmc").setExecutor(new GameModeCommand());
-        getCommand("gms").setExecutor(new GameModeCommand());
-        getCommand("gmsp").setExecutor(new GameModeCommand());
-        getCommand("gma").setExecutor(new GameModeCommand());
+        GameModeCommand GameMode = new GameModeCommand();
+        GameModeTabCompleter GameModeTabCompletion = new GameModeTabCompleter();
+        getCommand("gmc").setExecutor(GameMode);
+        getCommand("gms").setExecutor(GameMode);
+        getCommand("gmsp").setExecutor(GameMode);
+        getCommand("gma").setExecutor(GameMode);
+        getCommand("gmc").setTabCompleter(GameModeTabCompletion);
+        getCommand("gms").setTabCompleter(GameModeTabCompletion);
+        getCommand("gmsp").setTabCompleter(GameModeTabCompletion);
+        getCommand("gma").setTabCompleter(GameModeTabCompletion);
 
         ///// -- TELEPORT COMMANDS -- /////
         TeleportCommand teleportCommand = new TeleportCommand();
@@ -53,16 +61,19 @@ public final class GodllyCore extends JavaPlugin {
         ////// -- EVENT LISTENERS -- /////
         getServer().getPluginManager().registerEvents(new CommandListener(), this);
         getServer().getPluginManager().registerEvents(new ItemDropListener(dropCommand), this);  // Pass dropCommand to the listener
+        fullInventoryListener = new FullInventoryListener(this);
+        getServer().getPluginManager().registerEvents(fullInventoryListener, this);
 
         /////// -- CORE COMMANDS -- ///////
-        Core coreCommands = new Core(this);
-        getCommand("core").setExecutor(coreCommands);
+        getCommand("core").setExecutor(new Core(this, fullInventoryListener));
         getCommand("core").setTabCompleter(new CoreTabCompleter());
-        getCommand("core").setExecutor(coreCommands);
+
 
         /////// -- VANISH COMMANDS -- ///////
         getCommand("vanish").setExecutor(new VanishCommand(this));
 
+        ////// -- FULL INV COMMAND -- //////
+        getCommand("toggleinvfull").setExecutor(new InvFullToggleCommand(this));
     }
 
     @Override

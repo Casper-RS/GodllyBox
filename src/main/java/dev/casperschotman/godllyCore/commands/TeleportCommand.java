@@ -31,7 +31,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
             case "tp":
                 if (!player.hasPermission("godllycore.teleport.tp") && !player.hasPermission("godllycore.teleport.*")) {
                     player.sendMessage(getPrefix() + "§cYou do not have permission to use this command!");
-                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                     return true;
                 }
                 break;
@@ -39,7 +39,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
             case "tphere":
                 if (!player.hasPermission("godllycore.teleport.tphere") && !player.hasPermission("godllycore.teleport.*")) {
                     player.sendMessage(getPrefix() + "§cYou do not have permission to use this command!");
-                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                     return true;
                 }
                 break;
@@ -47,7 +47,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
             case "tpall":
                 if (!player.hasPermission("godllycore.teleport.tpall") && !player.hasPermission("godllycore.teleport.*")) {
                     player.sendMessage(getPrefix() + "§cYou do not have permission to use this command!");
-                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                     return true;
                 }
                 break;
@@ -63,7 +63,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                     Player target = Bukkit.getPlayer(args[0]);
                     if (target != null) {
                         if (player.equals(target)) {
-                            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                             player.sendMessage(getPrefix() + "§cYou cannot teleport to yourself!");
                             return true;
                         }
@@ -71,7 +71,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                         player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
                         player.sendMessage(getPrefix() + "§aTeleported to §e" + target.getName());
                     } else {
-                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                         player.sendMessage(getPrefix() + "§cPlayer not found!");
                     }
                 }
@@ -83,7 +83,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                     Player target = Bukkit.getPlayer(args[0]);
                     if (target != null) {
                         if (player.equals(target)) {
-                            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                             player.sendMessage(getPrefix() + "§cYou cannot teleport yourself to yourself!");
                             return true;
                         }
@@ -93,7 +93,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                         player.sendMessage(getPrefix() + "§e" + target.getName() + "§a has been teleported to you.");
                         target.sendMessage(getPrefix() + "§aYou have been teleported to §e" + player.getName());
                     } else {
-                        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                         player.sendMessage(getPrefix() + "§cPlayer not found!");
                     }
                 }
@@ -123,7 +123,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                         target.sendMessage(getPrefix() + "§aUse §e/tpaccept §aor §e/tpadeny§a.");
                         player.sendMessage(getPrefix() + "§aTeleport request sent to §e" + target.getName());
                     } else {
-                        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                         player.sendMessage(getPrefix() + "§cPlayer not found!");
                     }
                 }
@@ -142,7 +142,7 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                     }
                     teleportRequests.remove(player.getUniqueId());
                 } else {
-                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f); // Play level up sound
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                     player.sendMessage(getPrefix() + "§cYou don't have any pending teleport requests.");
                 }
                 break;
@@ -153,13 +153,13 @@ public class TeleportCommand implements CommandExecutor, TabCompleter {
                 if (requesterUUIDDeny != null) {
                     Player requester = Bukkit.getPlayer(requesterUUIDDeny);
                     if (requester != null) {
-                        requester.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
+                        requester.playSound(requester.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                         requester.sendMessage(getPrefix() + "§aYour teleport request was §cdenied.");
                         player.sendMessage(getPrefix() + "§aYou §cdenied §athe teleport request from §e" + requester.getName());
                     }
                     teleportRequests.remove(player.getUniqueId());
                 } else {
-                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
                     player.sendMessage(getPrefix() + "§cYou don't have any pending teleport requests.");
                 }
                 break;

@@ -1,6 +1,7 @@
 package dev.casperschotman.godllyCore.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,6 +34,7 @@ public class VanishCommand implements CommandExecutor {
 
         if (!player.hasPermission("godllycore.vanish")) {
             player.sendMessage(getPrefix() + "§cYou don't have permission to use this command.");
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
             return true;
         }
 
