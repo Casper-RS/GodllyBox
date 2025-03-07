@@ -17,8 +17,12 @@ public final class GodllyCore extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getLogger().info("GodllyCore made by ItzRepsac_");
-        getLogger().info(BLUE + "GodllyCore" + GREEN + " has been enabled!" + RESET);
+        getLogger().info("===================================");
+        getLogger().info("||                               ||");
+        getLogger().info("|| GodllyCore made by ItzRepsac_ ||");
+        getLogger().info(GREEN + "|| GodllyCore has been enabled!  ||" + RESET);
+        getLogger().info("||                               ||");
+        getLogger().info("===================================");
 
         /////// --- FLY COMMAND --- ///////
         getCommand("fly").setExecutor(new FlyCommand());
@@ -77,23 +81,11 @@ public final class GodllyCore extends JavaPlugin {
         ////// -- FULL INV COMMAND -- //////
         getCommand("toggleinvfull").setExecutor(new InvFullToggleCommand(this));
 
-        ///////// -- SPY COMMAND -- ////////
-        getCommand("cspy").setExecutor(new SpyCommand(this));
-        getCommand("cspy").setTabCompleter(new SpyTabCompleter());
-
         /////// -- DISCORD COMMAND -- //////
         getCommand("discord").setExecutor(new DiscordCommand());
 
         //////// -- SPAWN COMMAND -- ///////
         getCommand("spawn").setExecutor(new SpawnCommand(this)); // Register spawn command
-
-
-        // Save default config if not existing
-        saveDefaultConfig();
-
-
-        // Register event listeners
-
         }
 
     @Override

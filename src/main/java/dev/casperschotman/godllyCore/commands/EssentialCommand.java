@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -34,6 +33,8 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
     private final Set<UUID> godModePlayers = new HashSet<>();
     private final Map<UUID, Location> lastDeathLocation = new HashMap<>();
     private final Set<UUID> confirmClear = new HashSet<>();
+    private final Map<UUID, Location> lastTeleportLocation = new HashMap<>();
+    private final Set<UUID> spyingPlayers = new HashSet<>();
 
     public EssentialCommand(GodllyCore plugin) {
         this.plugin = plugin;
@@ -42,7 +43,7 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
     }
 
     public void registerCommands() {
-        String[] commands = { "craft", "anvil", "godmode", "back", "afk", "clear", "confirm", "enderchest", "item", "rename" };
+        String[] commands = {"craft", "anvil", "godmode", "back", "afk", "clear", "confirm", "enderchest", "item", "rename"};
         for (String cmd : commands) {
             if (plugin.getCommand(cmd) != null) {
                 plugin.getCommand(cmd).setExecutor(this);
@@ -61,7 +62,7 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
         }
         Player player = (Player) sender;
         String cmd = command.getName().toLowerCase();
-            switch (cmd){
+        switch (cmd) {
             case "craft":
                 if (!player.hasPermission("godllycore.essentials.craft")) return noPermission(player);
                 player.openWorkbench(null, true);
@@ -86,11 +87,37 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
 
             case "back":
                 if (!player.hasPermission("godllycore.essentials.back")) return noPermission(player);
-                if (lastDeathLocation.containsKey(player.getUniqueId())) {
-                    player.teleport(lastDeathLocation.get(player.getUniqueId()));
+
+                UUID playerId = player.getUniqueId();
+
+                if (lastTeleportLocation.containsKey(playerId)) {
+                    player.teleport(lastTeleportLocation.get(playerId));
+                    player.sendMessage(getPrefix() + ChatColor.GREEN + "Teleported to your last location before teleporting.");
+                    lastTeleportLocation.remove(playerId); // Remove after use to avoid reusing the same location
+                } else if (lastDeathLocation.containsKey(playerId)) {
+                    player.teleport(lastDeathLocation.get(playerId));
                     player.sendMessage(getPrefix() + ChatColor.GREEN + "Teleported to your last death location.");
                 } else {
-                    player.sendMessage(getPrefix() + ChatColor.RED + "No death location recorded.");
+                    player.sendMessage(getPrefix() + ChatColor.RED + "No previous location recorded.");
+                }
+                break;
+
+            case "cspy":
+                if (!player.hasPermission("godllycore.essentials.cspy")) return noPermission(player);
+
+                if (args.length < 1) {
+                    player.sendMessage(getPrefix() + ChatColor.RED + "Usage: /cspy <on/off>");
+                    return true;
+                }
+
+                if (args[0].equalsIgnoreCase("on")) {
+                    spyingPlayers.add(player.getUniqueId());
+                    player.sendMessage(getPrefix() + ChatColor.GREEN + "Command Spy enabled.");
+                } else if (args[0].equalsIgnoreCase("off")) {
+                    spyingPlayers.remove(player.getUniqueId());
+                    player.sendMessage(getPrefix() + ChatColor.RED + "Command Spy disabled.");
+                } else {
+                    player.sendMessage(getPrefix() + ChatColor.RED + "Usage: /cspy <on/off>");
                 }
                 break;
 
@@ -141,21 +168,21 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
             case "item":
                 if (!player.hasPermission("godllycore.essentials.item")) return noPermission(player);
 
-                if (args.length < 2) {
+                if (args.length < 1) { // Should be args.length < 1 instead of args.length < 2
                     player.sendMessage(getPrefix() + ChatColor.RED + "Usage: /item <material> [amount]");
                     return true;
                 }
 
-                Material material = Material.matchMaterial(args[1]);
+                Material material = Material.matchMaterial(args[0]); // Change args[1] to args[0]
                 if (material == null) {
                     player.sendMessage(getPrefix() + ChatColor.RED + "Invalid material.");
                     return true;
                 }
 
                 int amount = 1; // Default amount is 1
-                if (args.length >= 3) {
+                if (args.length >= 2) { // Change from args.length >= 3 to args.length >= 2
                     try {
-                        amount = Integer.parseInt(args[2]);
+                        amount = Integer.parseInt(args[1]); // Change args[2] to args[1]
                         if (amount < 1 || amount > material.getMaxStackSize()) {
                             player.sendMessage(getPrefix() + ChatColor.RED + "Invalid amount. Must be between 1 and " + material.getMaxStackSize() + ".");
                             return true;
@@ -173,7 +200,7 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
 
             case "rename":
                 if (!player.hasPermission("godllycore.essentials.rename")) return noPermission(player);
-                if (args.length < 2) {
+                if (args.length < 1) { // Change from args.length < 2 to args.length < 1
                     player.sendMessage(getPrefix() + ChatColor.RED + "Usage: /rename <new name>");
                     return true;
                 }
@@ -187,7 +214,9 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
                     player.sendMessage(getPrefix() + ChatColor.RED + "This item cannot be renamed.");
                     return true;
                 }
-                String newName = ChatColor.translateAlternateColorCodes('&', String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+
+                // Fix indexing: Use args[0] instead of args[1] and update the join range
+                String newName = ChatColor.translateAlternateColorCodes('&', String.join(" ", args));
                 meta.setDisplayName(newName);
                 item.setItemMeta(meta);
                 player.sendMessage(getPrefix() + ChatColor.GREEN + "Renamed item to: " + newName);
@@ -205,6 +234,15 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
     }
 
     @EventHandler
+    public void onPlayerTeleport(org.bukkit.event.player.PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
+
+        // Store the player's last location before teleporting
+        lastTeleportLocation.put(playerId, player.getLocation());
+    }
+
+    @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         lastDeathLocation.put(player.getUniqueId(), player.getLocation());
@@ -219,6 +257,20 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
             }
         }
     }
+
+    @EventHandler
+    public void onPlayerCommandPreprocess(org.bukkit.event.player.PlayerCommandPreprocessEvent event) {
+        Player sender = event.getPlayer();
+        String command = event.getMessage(); // Full command (e.g., "/spawn")
+
+        for (UUID uuid : spyingPlayers) {
+            Player spy = Bukkit.getPlayer(uuid);
+            if (spy != null && spy.isOnline()) {
+                spy.sendMessage("§8[§cCSpy§8]§4 " + sender.getName() + "§c: §7" + command);
+            }
+        }
+    }
+
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -277,7 +329,6 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
     }
 
 
-
     private void toggleAfk(Player player) {
         if (player == null || !player.isOnline()) return; // Voorkomt null-pointer errors
 
@@ -289,14 +340,26 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
             Bukkit.broadcastMessage(getPrefix() + ChatColor.YELLOW + player.getName() + ChatColor.GRAY + " is now AFK.");
         }
     }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (!(sender instanceof Player)) return Collections.emptyList();
+        Player player = (Player) sender;
 
         String cmd = command.getName().toLowerCase();
 
         switch (cmd) {
+            case "cspy":
+                if (!player.hasPermission("godllycore.cspy")) return Collections.emptyList();
+                if (args.length == 1) {
+                    return Arrays.asList("on", "off").stream()
+                            .filter(s -> s.startsWith(args[0].toLowerCase()))
+                            .collect(Collectors.toList());
+                }
+                break;
+
             case "item":
+                if (!player.hasPermission("godllycore.essentials.item")) return Collections.emptyList();
                 if (args.length == 1) {
                     return Arrays.stream(Material.values())
                             .map(Material::name)
@@ -310,6 +373,7 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
                 break;
 
             case "enderchest":
+                if (!player.hasPermission("godllycore.essentials.enderchest")) return Collections.emptyList();
                 if (args.length == 1) {
                     return Bukkit.getOnlinePlayers().stream()
                             .map(Player::getName)
@@ -320,4 +384,5 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
         }
         return Collections.emptyList();
     }
+
 }

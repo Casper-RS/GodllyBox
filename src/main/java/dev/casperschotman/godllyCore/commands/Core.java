@@ -14,7 +14,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.io.IOException;
@@ -151,7 +150,7 @@ public class Core implements CommandExecutor {
             sender.sendMessage(getPrefix() + "§cOnly players can execute this command.");
             return;
         }
-        if (!player.hasPermission("godllybox.core.restart")) {
+        if (!player.hasPermission("godllycore.core.restart")) {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
             player.sendMessage(getPrefix() + "§cYou don't have permission to restart the server.");
             return;

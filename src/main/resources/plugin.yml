@@ -9,12 +9,6 @@ commands:
     usage: /core <subcommand>
     permission: godllycore.core
     permission-message: You don't have permission to use this command.
-  cspy:
-    description: Command Spy feature.
-    usage: /cspy [on/off/exempt] [player]
-    permission: godllycore.spy
-    permission-message: You don't have permission to use this command.
-
   fly:
     description: Allows players to toggle fly mode and set fly speed
     usage: /<command> [speed <value> | speed reset]
@@ -115,23 +109,32 @@ commands:
   rename:
     description: Renames held item
     permission: godllycore.essentials.rename
+  cspy:
+    description: Toggle command spying
+    usage: /cspy <on/off>
+    permission: godllycore.essentials.cspy
 
 permissions:
   godllycore.fly:
     description: Allows players to toggle fly mode
     default: op
+
   godllycore.fly.speed:
     description: Allows players to set their fly speed
     default: op
+
   godllycore.vanish:
     description: Allows the player to vanish.
     default: op
+
   godllycore.vanish.see:
     description: Allows the player to see vanished players.
     default: false
+
   godllycore.viewplugins:
     description: Allows players to view plugin-related commands like /pl, /plugins, /reload, etc.
     default: op
+
   godllycore.core.*:
     description: Grants access to all GodllyCore commands
     default: op
@@ -140,58 +143,75 @@ permissions:
       godllycore.core.info: true
       godllybox.clearlag: true
       godllybox.core.restart: true
+
   godllycore.core.reload:
     description: Allows reloading the config
     default: op
+
   godllycore.core.info:
     description: Allows viewing plugin info
     default: true
-  godllybox.clearlag:
+
+  godllycore.core.clearlag:
     description: Allows executing the clearlag command
     default: op
-  godllybox.core.restart:
+
+  godllycore.core.restart:
     description: Allows restarting the server
     default: op
 
   godllycore.drop.bypass:
     description: Allows staff to bypass the drop cooldown
     default: op
+
   godllycore.gamemode.*:
     description: Allows access to all gamemode commands
     default: op
+
   godllycore.gamemode.creative:
     description: Allows setting gamemode to Creative
     default: op
+
   godllycore.gamemode.survival:
     description: Allows setting gamemode to Survival
     default: op
+
   godllycore.gamemode.spectator:
     description: Allows setting gamemode to Spectator
     default: op
+
   godllycore.gamemode.adventure:
     description: Allows setting gamemode to Adventure
     default: op
+
   godllycore.gamemode.others:
     description: Allows setting another player's gamemode
     default: op
+
   godllycore.toggleinvfull:
     description: Allows players to toggle inventory full notification
     default: true
+
   godllycore.spy:
     description: See command spy
     default: op
+
   godllycore.spy.admin:
     description: add exempts to command spy
     default: op
+
   godllycore.spawn:
     description: Allows the use of /spawn
     default: true
+
   godllycore.essentials.use:
     description: Allows use of /essentials
     default: true
+
   godllycore.admin:
     description: Allows reloading of the plugin
     default: op
+
   godllycore.essentials.*:
     description: Grants access to all essential commands
     default: op
@@ -240,4 +260,8 @@ permissions:
 
   godllycore.essentials.rename:
     description: Allows using /rename
+    default: op
+
+  godllycore.essentials.cspy:
+    description: Allows toggling command spying
     default: op
