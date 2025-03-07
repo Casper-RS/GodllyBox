@@ -1,14 +1,20 @@
 name: GodllyCore
-version: '2.2.0'
+version: '2.5.0'
 main: dev.casperschotman.godllyCore.GodllyCore
 api-version: '1.20'
 author: ItzRepsac_ / Casper
 commands:
   core:
-    description: Main command for GodllyCore plugin.
-    permission: godllycore.admin
-    usage: /<command> <subcommand>
-    aliases: [core]
+    description: Core commands for GodllyBox.
+    usage: /core <subcommand>
+    permission: godllycore.core
+    permission-message: You don't have permission to use this command.
+  cspy:
+    description: Command Spy feature.
+    usage: /cspy [on/off/exempt] [player]
+    permission: godllycore.spy
+    permission-message: You don't have permission to use this command.
+
   fly:
     description: Allows players to toggle fly mode and set fly speed
     usage: /<command> [speed <value> | speed reset]
@@ -72,6 +78,44 @@ commands:
     description: Toggle inventory full title notification
     usage: /invfulltoggle
     permission: godllycore.toggleinvfull
+  discord:
+    description: Displays the Discord invite link.
+    usage: /discord
+  spawn:
+    description: Teleport to spawn
+    usage: /spawn
+    permission: godllycore.spawn
+  craft:
+    description: Opens a crafting table
+    permission: godllycore.essentials.craft
+  anvil:
+    description: Opens an anvil
+    permission: godllycore.essentials.anvil
+  godmode:
+    description: Toggles godmode
+    permission: godllycore.essentials.godmode
+  back:
+    description: Teleports to last death location
+    permission: godllycore.essentials.back
+  afk:
+    description: Toggles AFK mode
+    permission: godllycore.essentials.afk
+  clear:
+    description: Clears inventory
+    permission: godllycore.essentials.clear
+  confirm:
+    description: Confirms inventory clear
+    permission: godllycore.essentials.clear
+  enderchest:
+    description: Opens ender chest
+    permission: godllycore.essentials.enderchest
+  item:
+    description: Gives an item
+    permission: godllycore.essentials.item
+  rename:
+    description: Renames held item
+    permission: godllycore.essentials.rename
+
 permissions:
   godllycore.fly:
     description: Allows players to toggle fly mode
@@ -88,15 +132,27 @@ permissions:
   godllycore.viewplugins:
     description: Allows players to view plugin-related commands like /pl, /plugins, /reload, etc.
     default: op
-  godllycore.core:
-    description: Allows the player to execute the /godllycore command and its subcommands
+  godllycore.core.*:
+    description: Grants access to all GodllyCore commands
     default: op
-  godllycore.reload:
-    description: Allows the player to reload the plugin configuration
+    children:
+      godllycore.core.reload: true
+      godllycore.core.info: true
+      godllybox.clearlag: true
+      godllybox.core.restart: true
+  godllycore.core.reload:
+    description: Allows reloading the config
     default: op
-  godllycore.restart:
-    description: Allows the player to initiate a server restart with a countdown
+  godllycore.core.info:
+    description: Allows viewing plugin info
+    default: true
+  godllybox.clearlag:
+    description: Allows executing the clearlag command
     default: op
+  godllybox.core.restart:
+    description: Allows restarting the server
+    default: op
+
   godllycore.drop.bypass:
     description: Allows staff to bypass the drop cooldown
     default: op
@@ -121,3 +177,67 @@ permissions:
   godllycore.toggleinvfull:
     description: Allows players to toggle inventory full notification
     default: true
+  godllycore.spy:
+    description: See command spy
+    default: op
+  godllycore.spy.admin:
+    description: add exempts to command spy
+    default: op
+  godllycore.spawn:
+    description: Allows the use of /spawn
+    default: true
+  godllycore.essentials.use:
+    description: Allows use of /essentials
+    default: true
+  godllycore.admin:
+    description: Allows reloading of the plugin
+    default: op
+  godllycore.essentials.*:
+    description: Grants access to all essential commands
+    default: op
+    children:
+      godllycore.essentials.craft: true
+      godllycore.essentials.anvil: true
+      godllycore.essentials.godmode: true
+      godllycore.essentials.back: true
+      godllycore.essentials.afk: true
+      godllycore.essentials.clear: true
+      godllycore.essentials.enderchest: true
+      godllycore.essentials.item: true
+      godllycore.essentials.rename: true
+
+  godllycore.essentials.craft:
+    description: Allows using /craft
+    default: op
+
+  godllycore.essentials.anvil:
+    description: Allows using /anvil
+    default: op
+
+  godllycore.essentials.godmode:
+    description: Allows using /godmode
+    default: op
+
+  godllycore.essentials.back:
+    description: Allows using /back
+    default: op
+
+  godllycore.essentials.afk:
+    description: Allows using /afk
+    default: op
+
+  godllycore.essentials.clear:
+    description: Allows using /clear and /confirm
+    default: op
+
+  godllycore.essentials.enderchest:
+    description: Allows using /enderchest
+    default: op
+
+  godllycore.essentials.item:
+    description: Allows using /item
+    default: op
+
+  godllycore.essentials.rename:
+    description: Allows using /rename
+    default: op

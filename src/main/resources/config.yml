@@ -1,7 +1,45 @@
 # Drop Cooldown in seconds.
 drop-cooldown: 30
 
-# The cooldown for inventory full title.
-# To prevent players not getting spammed with titles.
-# Cooldown in milliseconds (default: 5 seconds)
+# Time in milliseconds before next Inventory full title (default: 5 seconds)
 inv-full-message-cooldown: 5000
+
+# Time in seconds before a player is considered AFK (default: 1 minute)
+afk-time: 60
+
+# Make sure to use § console code for colors.
+# This is due the plugin does not support MiniMessage API yet.
+messages:
+  join: "§7[§a→§7] §a%player% §7joined."
+  quit: "§7[§c←§7] §c%player% §7left."
+  death:
+    fall: "§c§k;§r§4%player%§c really died to fall damage what a loser!§c§k;"
+    explosion: "§c§k;§r§4%player%§c really blew up without saying goodbye!§c§k;"
+    pvp:
+      - "§c§k;§r§4%player%§c got killed by §4%attacker%§c because they were trash!§c§k;"
+      - "§c§k;§r§4%player%§c got recked by §4%attacker%!§r§c§k;"
+      - "§c§k;§r§cLOSER §4%player%§c got killed by §4%attacker%§c!§r§c§k;"
+      - "§c§k;§r§4%player%§c got killed by §4%attacker%§c!§r§c§k;"
+
+# Default spawn & respawn on death location.
+death:
+  spawn:
+    world: "new1"
+    x: 4.5
+    y: -59
+    z: 3.5
+    yaw: 90
+    pitch: 0
+
+# Message and give items to a player when he joins for the first time
+first-join:
+  enabled: true
+  join-message: "&b&lWelcome %player% to &6&lGodllyBox&f&l!"
+  items:
+    - material: STONE_SWORD
+      name: "&7Starter Sword"
+    - material: STONE_PICKAXE
+      name: "&7Starter Pickaxe"
+    - material: STONE_AXE
+      name: "&7Starter Axe"
+

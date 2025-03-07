@@ -19,6 +19,7 @@ public class CoreTabCompleter implements TabCompleter {
             completions.add("reload");
             completions.add("info");
             completions.add("restart");
+            completions.add("clearlag");
         }
         if (args.length == 2) {
             completions.add("5");

@@ -4,20 +4,15 @@ import dev.casperschotman.godllyCore.commands.*;
 import dev.casperschotman.godllyCore.listeners.*;
 import dev.casperschotman.godllyCore.tabcompletion.*;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-@SuppressWarnings("unused")
 public final class GodllyCore extends JavaPlugin {
 
     public static final String RESET = "\u001B[0m";
     public static final String RED = "\u001B[31m";
     public static final String GREEN = "\u001B[32m";
-    public static final String YELLOW = "\u001B[33m";
     public static final String BLUE = "\u001B[34m";
-    public static final String PURPLE = "\u001B[35m";
-    public static final String CYAN = "\u001B[36m";
-
-    public FullInventoryListener fullInventoryListener;
 
     @Override
     public void onEnable() {
@@ -58,14 +53,21 @@ public final class GodllyCore extends JavaPlugin {
         getCommand("drop").setExecutor(dropCommand);
         getCommand("drop").setTabCompleter(new DropTabCompleter());
 
+        // Register command executor and tab completer
+        EssentialCommand essentialsCommands = new EssentialCommand(this);
+        essentialsCommands.registerCommands();
+
         ////// -- EVENT LISTENERS -- /////
         getServer().getPluginManager().registerEvents(new CommandListener(), this);
-        getServer().getPluginManager().registerEvents(new ItemDropListener(dropCommand), this);  // Pass dropCommand to the listener
-        fullInventoryListener = new FullInventoryListener(this);
-        getServer().getPluginManager().registerEvents(fullInventoryListener, this);
+        getServer().getPluginManager().registerEvents(new ItemDropListener(dropCommand), this);
+        getServer().getPluginManager().registerEvents(new FullInventoryListener(this), this);
+        getServer().getPluginManager().registerEvents(new CustomDeathMessageListener(this), this);
+        getServer().getPluginManager().registerEvents(new JoinQuitListener(this), this);
+        getServer().getPluginManager().registerEvents(new FirstJoinListener(this), this);
+        getServer().getPluginManager().registerEvents(essentialsCommands, this);
 
         /////// -- CORE COMMANDS -- ///////
-        getCommand("core").setExecutor(new Core(this, fullInventoryListener));
+        getCommand("core").setExecutor(new Core(this, new FullInventoryListener(this)));
         getCommand("core").setTabCompleter(new CoreTabCompleter());
 
 
@@ -74,7 +76,25 @@ public final class GodllyCore extends JavaPlugin {
 
         ////// -- FULL INV COMMAND -- //////
         getCommand("toggleinvfull").setExecutor(new InvFullToggleCommand(this));
-    }
+
+        ///////// -- SPY COMMAND -- ////////
+        getCommand("cspy").setExecutor(new SpyCommand(this));
+        getCommand("cspy").setTabCompleter(new SpyTabCompleter());
+
+        /////// -- DISCORD COMMAND -- //////
+        getCommand("discord").setExecutor(new DiscordCommand());
+
+        //////// -- SPAWN COMMAND -- ///////
+        getCommand("spawn").setExecutor(new SpawnCommand(this)); // Register spawn command
+
+
+        // Save default config if not existing
+        saveDefaultConfig();
+
+
+        // Register event listeners
+
+        }
 
     @Override
     public void onDisable() {

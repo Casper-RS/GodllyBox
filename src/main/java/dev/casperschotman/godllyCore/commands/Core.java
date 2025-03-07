@@ -1,7 +1,8 @@
 package dev.casperschotman.godllyCore.commands;
 import dev.casperschotman.godllyCore.GodllyCore;
+import dev.casperschotman.godllyCore.listeners.*;
+import static dev.casperschotman.godllyCore.messages.PrefixHandler.getPrefix;
 
-import dev.casperschotman.godllyCore.listeners.FullInventoryListener;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -9,12 +10,14 @@ import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import java.io.IOException;
-
-import static dev.casperschotman.godllyCore.messages.PrefixHandler.getPrefix;
 
 public class Core implements CommandExecutor {
 
@@ -24,23 +27,25 @@ public class Core implements CommandExecutor {
     public Core(GodllyCore plugin, FullInventoryListener fullInventoryListener) {
         this.plugin = plugin;
         this.fullInventoryListener = fullInventoryListener;
+        startAutoClearLag();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            // If no subcommand is provided
             sender.sendMessage(getPrefix() + "§cPlease provide a subcommand.");
             return true;
         }
 
-        // Handle subcommands
         switch (args[0].toLowerCase()) {
             case "reload":
                 handleReload(sender);
                 break;
             case "info":
                 handleInfo(sender);
+                break;
+            case "clearlag":
+                handleClearLag(sender);
                 break;
             case "restart":
                 if (args.length > 1) {
@@ -50,30 +55,44 @@ public class Core implements CommandExecutor {
                 }
                 break;
             default:
-                sender.sendMessage(getPrefix() + "§cUnknown subcommand. Try /godllycore reload.");
+                sender.sendMessage(getPrefix() + "§cUnknown subcommand. Try /core reload, /core info, or /core clearlag.");
                 break;
         }
         return true;
     }
 
-    public void handleReload(CommandSender sender) {
-        if (sender instanceof Player player) {
-            if (!player.hasPermission("godllycore.reload")) {
-                player.sendMessage(getPrefix() + "§cYou don't have permission to reload the configuration.");
-                return;
-            }
+    private void handleReload(CommandSender sender) {
+        if (sender instanceof Player player && !player.hasPermission("godllycore.core.reload")) {
+            player.sendMessage(getPrefix() + "§cYou don't have permission to reload the configuration.");
+            return;
         }
 
-        // Reload the configuration
         plugin.reloadConfig();
         fullInventoryListener.loadConfig();
+
+        // Unregister existing listeners properly
+        PlayerDeathEvent.getHandlerList().unregister(plugin);
+        org.bukkit.event.player.PlayerRespawnEvent.getHandlerList().unregister(plugin);
+        PlayerJoinEvent.getHandlerList().unregister(plugin);
+
+        // Explicitly unregister RuleListener instead of removing all PlayerJoinEvent listeners
+        HandlerList.unregisterAll(plugin);
+
+        // Re-register event listeners
+        Bukkit.getPluginManager().registerEvents(new JoinQuitListener(plugin), plugin);
+        Bukkit.getPluginManager().registerEvents(new CustomDeathMessageListener(plugin), plugin);
+        Bukkit.getPluginManager().registerEvents(new PlayerRespawnListener(plugin), plugin);
+        Bukkit.getPluginManager().registerEvents(new FirstJoinListener(plugin), plugin);
+        Bukkit.getPluginManager().registerEvents(new EssentialCommand(plugin), plugin);
         sender.sendMessage(getPrefix() + "§aConfiguration reloaded successfully!");
     }
 
-    private void handleInfo(CommandSender sender) {
-        String version = plugin.getDescription().getVersion(); // Get the plugin version from plugin.yml
-        String author = plugin.getDescription().getAuthors().getFirst(); // Get the author from plugin.yml
 
+
+
+    private void handleInfo(CommandSender sender) {
+        String version = plugin.getDescription().getVersion();
+        String author = plugin.getDescription().getAuthors().getFirst();
         sender.sendMessage(" ");
         sender.sendMessage("§8--------[§3GodllyCore Info§8]--------");
         sender.sendMessage("§3Version: §e" + version);
@@ -83,18 +102,60 @@ public class Core implements CommandExecutor {
         sender.sendMessage("§8-------------------------------------");
     }
 
+    private void handleClearLag(CommandSender sender) {
+        if (sender instanceof Player player && !player.hasPermission("godllycore.core.clearlag")) {
+            player.sendMessage(getPrefix() + "§cYou don't have permission to execute this command.");
+            return;
+        }
+
+        Bukkit.broadcastMessage(getPrefix() + "§4Clearing all entities in 5 seconds!");
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                clearLag();
+            }
+        }.runTaskLater(plugin, 100L);
+    }
+
+    private void startAutoClearLag() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Bukkit.broadcastMessage(getPrefix() + "§4Automatic entity clear in 10 seconds!");
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        clearLag();
+                    }
+                }.runTaskLater(plugin, 200L);
+            }
+        }.runTaskTimer(plugin, 36000L, 36000L);
+    }
+
+    private void clearLag() {
+        int removed = 0;
+        for (org.bukkit.World world : Bukkit.getWorlds()) { // Loop through all worlds
+            for (Entity entity : world.getEntities()) {
+                if (entity instanceof org.bukkit.entity.Item) { // Ensure it's a dropped item
+                    entity.remove();
+                    removed++;
+                }
+            }
+        }
+        Bukkit.broadcastMessage(getPrefix() + "§cCleared §4" + removed + " §centities (dropped items)!");
+    }
+
+
     private void handleRestart(CommandSender sender, String timeArg) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(getPrefix() + "§cOnly players can execute this command.");
             return;
         }
-
-        if (!player.hasPermission("godllybox.restart")) {
+        if (!player.hasPermission("godllybox.core.restart")) {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0f, 1.0f);
             player.sendMessage(getPrefix() + "§cYou don't have permission to restart the server.");
             return;
         }
-
         int time;
         try {
             time = Integer.parseInt(timeArg);
@@ -105,17 +166,14 @@ public class Core implements CommandExecutor {
         }
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
         player.sendMessage(getPrefix() + "§aThe server will restart in " + time + " seconds.");
-
         new BukkitRunnable() {
             int countdown = time;
-
             @Override
             public void run() {
                 if (countdown <= 0) {
-                    Bukkit.getServer().shutdown(); // Shutdown the server first
+                    Bukkit.getServer().shutdown();
                     Bukkit.getScheduler().runTaskLater(plugin, () -> {
                         try {
-                            // Assuming you have a script or command to restart the server
                             Runtime.getRuntime().exec("java -jar " + plugin.getDataFolder().getParentFile().getName() + "/server.jar");
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -130,6 +188,6 @@ public class Core implements CommandExecutor {
                     countdown--;
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L); // 20L means 1 second
+        }.runTaskTimer(plugin, 0L, 20L);
     }
 }
