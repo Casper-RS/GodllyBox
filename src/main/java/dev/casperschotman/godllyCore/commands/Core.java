@@ -3,6 +3,7 @@ import dev.casperschotman.godllyCore.GodllyCore;
 import dev.casperschotman.godllyCore.listeners.*;
 import static dev.casperschotman.godllyCore.messages.PrefixHandler.getPrefix;
 
+import dev.casperschotman.godllyCore.messages.PrefixHandler;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -13,16 +14,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class Core implements CommandExecutor {
 
     private final GodllyCore plugin;
     private final FullInventoryListener fullInventoryListener;
-
     public Core(GodllyCore plugin, FullInventoryListener fullInventoryListener) {
         this.plugin = plugin;
         this.fullInventoryListener = fullInventoryListener;
@@ -66,28 +67,39 @@ public class Core implements CommandExecutor {
             return;
         }
 
+        long startTime = System.currentTimeMillis();
+
         plugin.reloadConfig();
+        PrefixHandler.loadPrefix(); // Initialize prefix system
+
         fullInventoryListener.loadConfig();
 
-        // Unregister existing listeners properly
-        PlayerDeathEvent.getHandlerList().unregister(plugin);
-        org.bukkit.event.player.PlayerRespawnEvent.getHandlerList().unregister(plugin);
-        PlayerJoinEvent.getHandlerList().unregister(plugin);
-
-        // Explicitly unregister RuleListener instead of removing all PlayerJoinEvent listeners
+        // Unregister all event listeners to prevent duplicates
         HandlerList.unregisterAll(plugin);
 
-        // Re-register event listeners
-        Bukkit.getPluginManager().registerEvents(new JoinQuitListener(plugin), plugin);
-        Bukkit.getPluginManager().registerEvents(new CustomDeathMessageListener(plugin), plugin);
-        Bukkit.getPluginManager().registerEvents(new PlayerRespawnListener(plugin), plugin);
-        Bukkit.getPluginManager().registerEvents(new FirstJoinListener(plugin), plugin);
-        Bukkit.getPluginManager().registerEvents(new EssentialCommand(plugin), plugin);
-        sender.sendMessage(getPrefix() + "§aConfiguration reloaded successfully!");
+        // Re-register event listeners using stored instances (not new ones)
+        List<Listener> listeners = Arrays.asList(
+                plugin.getAfkListener(),
+                plugin.getCommandSpyListener(),
+                plugin.getGodModeListener(),
+                plugin.getTeleportListener(),
+                new JoinQuitListener(plugin),
+                new CustomDeathMessageListener(plugin),
+                new PlayerRespawnListener(plugin),
+                new FirstJoinListener(plugin),
+                new EssentialCommand(plugin),
+                new FullInventoryListener(plugin),
+                new ItemDropListener(plugin.getDropCommand()),
+                new CommandListener()
+        );
+
+        for (Listener listener : listeners) {
+            Bukkit.getPluginManager().registerEvents(listener, plugin);
+        }
+
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        sender.sendMessage(getPrefix() + "§aConfiguration reloaded successfully in " + elapsedTime + "ms!");
     }
-
-
-
 
     private void handleInfo(CommandSender sender) {
         String version = plugin.getDescription().getVersion();

@@ -1,45 +1,35 @@
 package dev.casperschotman.godllyCore.commands;
 
 import dev.casperschotman.godllyCore.GodllyCore;
+import dev.casperschotman.godllyCore.listeners.AfkListener;
+import dev.casperschotman.godllyCore.listeners.CommandSpyListener;
+import dev.casperschotman.godllyCore.listeners.GodmodeListener;
+import dev.casperschotman.godllyCore.listeners.TeleportListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static dev.casperschotman.godllyCore.messages.PrefixHandler.getPrefix;
 
-public class EssentialCommand implements CommandExecutor, TabCompleter, Listener {
+public class EssentialCommand implements CommandExecutor, Listener {
     private final GodllyCore plugin;
-    private final Map<UUID, Long> afkTimers = new HashMap<>();
-    private final Set<UUID> afkPlayers = new HashSet<>();
-    private final Set<UUID> godModePlayers = new HashSet<>();
-    private final Map<UUID, Location> lastDeathLocation = new HashMap<>();
     private final Set<UUID> confirmClear = new HashSet<>();
-    private final Map<UUID, Location> lastTeleportLocation = new HashMap<>();
-    private final Set<UUID> spyingPlayers = new HashSet<>();
 
     public EssentialCommand(GodllyCore plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        startAfkChecker();
     }
 
     public void registerCommands() {
@@ -47,7 +37,6 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
         for (String cmd : commands) {
             if (plugin.getCommand(cmd) != null) {
                 plugin.getCommand(cmd).setExecutor(this);
-                plugin.getCommand(cmd).setTabCompleter(this);
             } else {
                 plugin.getLogger().warning("Command /" + cmd + " is not defined in plugin.yml!");
             }
@@ -62,6 +51,7 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
         }
         Player player = (Player) sender;
         String cmd = command.getName().toLowerCase();
+
         switch (cmd) {
             case "craft":
                 if (!player.hasPermission("godllycore.essentials.craft")) return noPermission(player);
@@ -74,60 +64,50 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
                 player.openInventory(anvil);
                 break;
 
-            case "godmode":
-                if (!player.hasPermission("godllycore.essentials.godmode")) return noPermission(player);
-                if (godModePlayers.contains(player.getUniqueId())) {
-                    godModePlayers.remove(player.getUniqueId());
-                    player.sendMessage(getPrefix() + ChatColor.RED + "Godmode disabled.");
-                } else {
-                    godModePlayers.add(player.getUniqueId());
-                    player.sendMessage(getPrefix() + ChatColor.GREEN + "Godmode enabled.");
-                }
-                break;
-
             case "back":
                 if (!player.hasPermission("godllycore.essentials.back")) return noPermission(player);
 
-                UUID playerId = player.getUniqueId();
-
-                if (lastTeleportLocation.containsKey(playerId)) {
-                    player.teleport(lastTeleportLocation.get(playerId));
-                    player.sendMessage(getPrefix() + ChatColor.GREEN + "Teleported to your last location before teleporting.");
-                    lastTeleportLocation.remove(playerId); // Remove after use to avoid reusing the same location
-                } else if (lastDeathLocation.containsKey(playerId)) {
-                    player.teleport(lastDeathLocation.get(playerId));
-                    player.sendMessage(getPrefix() + ChatColor.GREEN + "Teleported to your last death location.");
+                TeleportListener backListener = plugin.getTeleportListener();
+                if (backListener == null) {
+                    player.sendMessage(ChatColor.RED + "Back system is not initialized.");
                 } else {
-                    player.sendMessage(getPrefix() + ChatColor.RED + "No previous location recorded.");
+                    backListener.teleportBack(player);
+                }
+                break;
+
+            case "godmode":
+                if (!player.hasPermission("godllycore.essentials.godmode")) return noPermission(player);
+
+                GodmodeListener godModeListener = plugin.getGodModeListener();
+                if (godModeListener == null) {
+                    player.sendMessage(ChatColor.RED + "God Mode system is not initialized.");
+                } else {
+                    godModeListener.toggleGodMode(player);
                 }
                 break;
 
             case "cspy":
                 if (!player.hasPermission("godllycore.essentials.cspy")) return noPermission(player);
 
-                if (args.length == 0) { // Fix: If no arguments, show usage
-                    player.sendMessage(getPrefix() + ChatColor.RED + "Usage: /cspy <on/off>");
-                    return true;
-                }
-
-                String option = args[0].toLowerCase(); // Normalize input
-
-                if (option.equals("on")) {
-                    spyingPlayers.add(player.getUniqueId());
-                    player.sendMessage(getPrefix() + ChatColor.GREEN + "Command Spy enabled.");
-                } else if (option.equals("off")) {
-                    spyingPlayers.remove(player.getUniqueId());
-                    player.sendMessage(getPrefix() + ChatColor.RED + "Command Spy disabled.");
+                CommandSpyListener commandSpyListener = plugin.getCommandSpyListener();
+                if (commandSpyListener == null) {
+                    player.sendMessage(ChatColor.RED + "Command Spy system is not initialized.");
                 } else {
-                    player.sendMessage(getPrefix() + ChatColor.RED + "Usage: /cspy <on/off>");
+                    commandSpyListener.toggleCommandSpy(player);
                 }
                 break;
-
 
             case "afk":
                 if (!player.hasPermission("godllycore.essentials.afk")) return noPermission(player);
-                toggleAfk(player);
+
+                AfkListener afkListener = plugin.getAfkListener();
+                if (afkListener == null) {
+                    player.sendMessage(ChatColor.RED + "AFK system is not initialized.");
+                } else {
+                    afkListener.toggleAfk(player);
+                }
                 break;
+
 
             case "clear":
                 if (!player.hasPermission("godllycore.essentials.clear")) return noPermission(player);
@@ -187,7 +167,7 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
                     try {
                         amount = Integer.parseInt(args[1]); // Change args[2] to args[1]
                         if (amount < 1 || amount > material.getMaxStackSize()) {
-                            player.sendMessage(getPrefix() + ChatColor.RED + "Invalid amount. Must be between 1 and " + material.getMaxStackSize() + ".");
+                            player.sendMessage(getPrefix() + ChatColor.RED + "Unstackable item. Must be between 1 and " + material.getMaxStackSize() + ".");
                             return true;
                         }
                     } catch (NumberFormatException e) {
@@ -235,162 +215,4 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
         player.sendMessage(getPrefix() + ChatColor.RED + "You don't have permission to use this command.");
         return true;
     }
-
-    @EventHandler
-    public void onPlayerTeleport(org.bukkit.event.player.PlayerTeleportEvent event) {
-        Player player = event.getPlayer();
-        UUID playerId = player.getUniqueId();
-
-        // Store the player's last location before teleporting
-        lastTeleportLocation.put(playerId, player.getLocation());
-    }
-
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player player = event.getEntity();
-        lastDeathLocation.put(player.getUniqueId(), player.getLocation());
-    }
-
-    @EventHandler
-    public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-            if (godModePlayers.contains(player.getUniqueId())) {
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    @EventHandler
-    public void onPlayerCommandPreprocess(org.bukkit.event.player.PlayerCommandPreprocessEvent event) {
-        Player sender = event.getPlayer();
-        String command = event.getMessage(); // Full command (e.g., "/spawn")
-
-        for (UUID uuid : spyingPlayers) {
-            if (uuid.equals(sender.getUniqueId())) {
-                continue; // Skip logging the player's own command
-            }
-
-            Player spy = Bukkit.getPlayer(uuid);
-            if (spy != null && spy.isOnline()) {
-                spy.sendMessage("§8[§cCSpy§8]§4 " + sender.getName() + "§c: §7" + command);
-            }
-        }
-    }
-
-
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        afkTimers.put(player.getUniqueId(), System.currentTimeMillis());
-        removeAfkIfNeeded(player);
-    }
-
-    @EventHandler
-    public void onPlayerInteract(org.bukkit.event.player.PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        afkTimers.put(player.getUniqueId(), System.currentTimeMillis());
-        removeAfkIfNeeded(player);
-    }
-
-    @EventHandler
-    public void onPlayerChat(org.bukkit.event.player.AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
-        afkTimers.put(player.getUniqueId(), System.currentTimeMillis());
-        removeAfkIfNeeded(player);
-    }
-
-    @EventHandler
-    public void onPlayerBlockBreak(org.bukkit.event.block.BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        afkTimers.put(player.getUniqueId(), System.currentTimeMillis());
-        removeAfkIfNeeded(player);
-    }
-
-
-    private void removeAfkIfNeeded(Player player) {
-        if (afkPlayers.contains(player.getUniqueId())) {
-            afkPlayers.remove(player.getUniqueId());
-            Bukkit.broadcastMessage(getPrefix() + ChatColor.YELLOW + player.getName() + ChatColor.GRAY + " is no longer AFK.");
-        }
-    }
-
-
-    private void startAfkChecker() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                long afkTime = plugin.getConfig().getLong("afk-time", 60) * 1000; // 180 seconden standaard
-
-                for (UUID uuid : new HashSet<>(afkTimers.keySet())) { // Kopie om ConcurrentModificationException te voorkomen
-                    Player player = Bukkit.getPlayer(uuid);
-                    if (player == null || !player.isOnline()) continue;
-
-                    long lastActive = afkTimers.getOrDefault(uuid, System.currentTimeMillis()); // Default voorkomt null
-                    if (System.currentTimeMillis() - lastActive > afkTime && !afkPlayers.contains(uuid)) {
-                        toggleAfk(player);
-                    }
-                }
-            }
-        }.runTaskTimer(plugin, 20, 20);
-    }
-
-
-    private void toggleAfk(Player player) {
-        if (player == null || !player.isOnline()) return; // Voorkomt null-pointer errors
-
-        if (afkPlayers.contains(player.getUniqueId())) {
-            afkPlayers.remove(player.getUniqueId());
-            Bukkit.broadcastMessage(getPrefix() + ChatColor.YELLOW + player.getName() + ChatColor.GRAY + " is no longer AFK.");
-        } else {
-            afkPlayers.add(player.getUniqueId());
-            Bukkit.broadcastMessage(getPrefix() + ChatColor.YELLOW + player.getName() + ChatColor.GRAY + " is now AFK.");
-        }
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (!(sender instanceof Player)) return Collections.emptyList();
-        Player player = (Player) sender;
-
-        String cmd = command.getName().toLowerCase();
-
-        switch (cmd) {
-            case "cspy":
-                if (!player.hasPermission("godllycore.essentials.cspy")) return Collections.emptyList();
-                if (args.length == 1) {
-                    return Arrays.asList("on", "off").stream()
-                            .filter(s -> s.startsWith(args[0].toLowerCase())) // Filter based on input
-                            .collect(Collectors.toList());
-                }
-                break;
-
-            case "item":
-                if (!player.hasPermission("godllycore.essentials.item")) return Collections.emptyList();
-                if (args.length == 1) {
-                    return Arrays.stream(Material.values())
-                            .map(Material::name)
-                            .map(String::toLowerCase)
-                            .filter(name -> name.startsWith(args[0].toLowerCase()))
-                            .collect(Collectors.toList());
-                }
-                if (args.length == 2) {
-                    return Arrays.asList("1", "16", "32", "64");
-                }
-                break;
-
-            case "enderchest":
-                if (!player.hasPermission("godllycore.essentials.enderchest")) return Collections.emptyList();
-                if (args.length == 1) {
-                    return Bukkit.getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
-                            .collect(Collectors.toList());
-                }
-                break;
-        }
-        return Collections.emptyList();
-    }
-
 }

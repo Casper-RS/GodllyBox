@@ -265,3 +265,4 @@ permissions:
   godllycore.essentials.cspy:
     description: Allows toggling command spying
     default: op
+

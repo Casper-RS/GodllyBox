@@ -1,3 +1,6 @@
+# Server prefix used in messages
+prefix: "&8[&3ɢᴏᴅʟʟʏʙᴏx&8] &7≫ "
+
 # Drop Cooldown in seconds.
 drop-cooldown: 30
 
@@ -42,4 +45,3 @@ first-join:
       name: "&7Starter Pickaxe"
     - material: STONE_AXE
       name: "&7Starter Axe"
-
