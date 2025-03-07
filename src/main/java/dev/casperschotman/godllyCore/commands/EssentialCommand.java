@@ -43,7 +43,7 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
     }
 
     public void registerCommands() {
-        String[] commands = {"craft", "anvil", "godmode", "back", "afk", "clear", "confirm", "enderchest", "item", "rename"};
+        String[] commands = {"craft", "cspy", "anvil", "godmode", "back", "afk", "clear", "confirm", "enderchest", "item", "rename"};
         for (String cmd : commands) {
             if (plugin.getCommand(cmd) != null) {
                 plugin.getCommand(cmd).setExecutor(this);
@@ -105,21 +105,24 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
             case "cspy":
                 if (!player.hasPermission("godllycore.essentials.cspy")) return noPermission(player);
 
-                if (args.length < 1) {
+                if (args.length == 0) { // Fix: If no arguments, show usage
                     player.sendMessage(getPrefix() + ChatColor.RED + "Usage: /cspy <on/off>");
                     return true;
                 }
 
-                if (args[0].equalsIgnoreCase("on")) {
+                String option = args[0].toLowerCase(); // Normalize input
+
+                if (option.equals("on")) {
                     spyingPlayers.add(player.getUniqueId());
                     player.sendMessage(getPrefix() + ChatColor.GREEN + "Command Spy enabled.");
-                } else if (args[0].equalsIgnoreCase("off")) {
+                } else if (option.equals("off")) {
                     spyingPlayers.remove(player.getUniqueId());
                     player.sendMessage(getPrefix() + ChatColor.RED + "Command Spy disabled.");
                 } else {
                     player.sendMessage(getPrefix() + ChatColor.RED + "Usage: /cspy <on/off>");
                 }
                 break;
+
 
             case "afk":
                 if (!player.hasPermission("godllycore.essentials.afk")) return noPermission(player);
@@ -264,12 +267,17 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
         String command = event.getMessage(); // Full command (e.g., "/spawn")
 
         for (UUID uuid : spyingPlayers) {
+            if (uuid.equals(sender.getUniqueId())) {
+                continue; // Skip logging the player's own command
+            }
+
             Player spy = Bukkit.getPlayer(uuid);
             if (spy != null && spy.isOnline()) {
                 spy.sendMessage("§8[§cCSpy§8]§4 " + sender.getName() + "§c: §7" + command);
             }
         }
     }
+
 
 
     @EventHandler
@@ -350,10 +358,10 @@ public class EssentialCommand implements CommandExecutor, TabCompleter, Listener
 
         switch (cmd) {
             case "cspy":
-                if (!player.hasPermission("godllycore.cspy")) return Collections.emptyList();
+                if (!player.hasPermission("godllycore.essentials.cspy")) return Collections.emptyList();
                 if (args.length == 1) {
                     return Arrays.asList("on", "off").stream()
-                            .filter(s -> s.startsWith(args[0].toLowerCase()))
+                            .filter(s -> s.startsWith(args[0].toLowerCase())) // Filter based on input
                             .collect(Collectors.toList());
                 }
                 break;
