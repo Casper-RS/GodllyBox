@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 
 public class PrefixHandler {
     private static String prefix = "§8[§3ɢᴏᴅʟʟʏʙᴏx§8] §7≫ "; // Default prefix
+    private static String tutPrefix = "§8[&6ᴛᴜᴛᴏʀɪᴀʟ&8]§7≫ ";
     private static GodllyCore plugin;
 
     // Initialize the PrefixHandler with plugin instance
@@ -24,5 +25,9 @@ public class PrefixHandler {
     // Get the current prefix
     public static String getPrefix() {
         return prefix;
+    }
+
+    public static String getTutPrefix() {
+        return tutPrefix;
     }
 }

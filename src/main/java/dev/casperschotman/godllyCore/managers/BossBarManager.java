@@ -29,21 +29,37 @@ public class BossBarManager {
         bossBars.clear(); // Ensure no duplicates
 
         BossBar bar1 = Bukkit.createBossBar(
-                ChatColor.translateAlternateColorCodes('&', "&6IP: &e&lgodllybox.minehut.gg!"),
+                ChatColor.translateAlternateColorCodes('&', "&6IP: &e&lgodllybox.minehut.gg"),
                 BarColor.YELLOW,
                 BarStyle.SOLID
         );
         bar1.setProgress(1.0);
 
         BossBar bar2 = Bukkit.createBossBar(
-                ChatColor.translateAlternateColorCodes('&', "&3Discord: discord.gg/rdXkTHtGbW"),
+                ChatColor.translateAlternateColorCodes('&', "&3&lJoin our community: &9&l/discord"),
                 BarColor.BLUE,
                 BarStyle.SOLID
         );
         bar2.setProgress(1.0);
 
+        BossBar bar3 = Bukkit.createBossBar(
+                ChatColor.translateAlternateColorCodes('&', "&c&lMake sure to read the &4&l/rules"),
+                BarColor.PURPLE,
+                BarStyle.SOLID
+        );
+        bar3.setProgress(1.0);
+
+        BossBar bar4 = Bukkit.createBossBar(
+                ChatColor.translateAlternateColorCodes('&', "&a&lSupport us: &2&lgodllybox.tebex.io"),
+                BarColor.GREEN,
+                BarStyle.SOLID
+        );
+        bar4.setProgress(1.0);
+
         bossBars.add(bar1);
         bossBars.add(bar2);
+        bossBars.add(bar3);
+        bossBars.add(bar4);
     }
 
     public void startBossBarRotation() {

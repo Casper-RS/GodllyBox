@@ -26,7 +26,6 @@ public final class GodllyCore extends JavaPlugin {
     private CommandSpyListener commandSpyListener;
     private DropCommand dropCommand;
     private BossBarManager bossBarManager;
-    private GrapplingHookListener grapplingHookListener;
 
     @Override
     public void onEnable() {
@@ -36,7 +35,7 @@ public final class GodllyCore extends JavaPlugin {
         getLogger().info("===================================");
         getLogger().info("||                               ||");
         getLogger().info("|| GodllyCore made by ItzRepsac_ ||");
-        getLogger().info(GREEN + "|| GodllyCore has been enabled!  ||" + RESET);
+        getLogger().info("||" + GREEN + " GodllyCore has been enabled!  " + RESET + "||");
         getLogger().info("||                               ||");
         getLogger().info("===================================");
 
@@ -50,13 +49,15 @@ public final class GodllyCore extends JavaPlugin {
         teleportListener = new TeleportListener(this);
         godmodeListener = new GodmodeListener(this);
         commandSpyListener = new CommandSpyListener(this);
-        grapplingHookListener = new GrapplingHookListener(this);
 
         new AfkPlaceholder(this, afkListener).register();
         registerListeners();
         registerCommands();
-
+        getLogger().info("===================================");
+        getLogger().info(" ");
         getLogger().info(GREEN + "All commands and listeners have been registered successfully!" + RESET);
+        getLogger().info(" ");
+        getLogger().info("===================================");
     }
 
     @Override
@@ -73,7 +74,6 @@ public final class GodllyCore extends JavaPlugin {
                 new JoinQuitListener(this),
                 new FirstJoinListener(this),
                 new PlayerRespawnListener(this),
-                grapplingHookListener,
                 afkListener,
                 teleportListener,
                 godmodeListener,
@@ -86,6 +86,8 @@ public final class GodllyCore extends JavaPlugin {
     }
 
     private void registerCommands() {
+        getCommand("broadcast").setExecutor(new BroadCastCommand());
+        getCommand("tutorial").setExecutor(new TutorialCommand(this));
         // Essential Commands
         EssentialCommand essentialsCommands = new EssentialCommand(this);
         essentialsCommands.registerCommands();
@@ -154,7 +156,4 @@ public final class GodllyCore extends JavaPlugin {
         return dropCommand;
     }
 
-    public BossBarManager getBossBarManager() {
-        return bossBarManager;
-    }
 }

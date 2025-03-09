@@ -45,3 +45,11 @@ first-join:
       name: "&7Starter Pickaxe"
     - material: STONE_AXE
       name: "&7Starter Axe"
+
+#Tutorial delay between messages
+tutorial:
+  title-fade-in: 10      # Time (ticks) for the title to fade in (10 ticks = 0.5 sec)
+  title-stay: 40         # Time (ticks) the title stays visible (40 ticks = 2 sec)
+  title-fade-out: 10     # Time (ticks) for the title to fade out (10 ticks = 0.5 sec)
+  chat-start-delay: 60   # Delay (ticks) before chat messages start (60 ticks = 3 sec)
+  message-interval: 70   # Delay (ticks) between chat messages (70 ticks = 3.5 sec)

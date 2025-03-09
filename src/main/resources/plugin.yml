@@ -17,6 +17,16 @@ commands:
     usage: /<command> [speed <value> | speed reset]
     permission: godllycore.fly
     permission-message: You do not have permission to use the fly command.
+  broadcast:
+    description: Broadcast a message to all players
+    usage: /broadcast <message>
+    permission: broadcast.use
+    permission-message: You don't have permission to use this command!
+  tutorial:
+    description: Starts the tutorial
+    usage: /tutorial
+    permission: godllycore.tutorial
+    permission-message: You do not have permission to use this command!
   gmc:
     description: Set game mode to Creative
     usage: /gmc [player]
@@ -269,3 +279,10 @@ permissions:
     description: Allows toggling command spying
     default: op
 
+  godllycore.tutorial:
+    description: Allows using /tutorial
+    default: true
+
+  godllycore.tutorial.reset:
+    description: Allows resetting the tutorial progress
+    default: op
