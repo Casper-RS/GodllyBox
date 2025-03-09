@@ -90,6 +90,9 @@ public class AfkListener implements Listener {
             }
         }.runTaskTimer(plugin, 20, 20); // Check every second
     }
+    public boolean isAfk(Player player) {
+        return afkPlayers.contains(player.getUniqueId());
+    }
 
     public void toggleAfk(Player player) {
         if (player == null || !player.isOnline()) return;

@@ -4,6 +4,7 @@ import dev.casperschotman.godllyCore.commands.*;
 import dev.casperschotman.godllyCore.listeners.*;
 import dev.casperschotman.godllyCore.managers.BossBarManager;
 import dev.casperschotman.godllyCore.messages.PrefixHandler;
+import dev.casperschotman.godllyCore.placeholderapi.AfkPlaceholder;
 import dev.casperschotman.godllyCore.tabcompletion.*;
 
 import org.bukkit.Bukkit;
@@ -25,6 +26,7 @@ public final class GodllyCore extends JavaPlugin {
     private CommandSpyListener commandSpyListener;
     private DropCommand dropCommand;
     private BossBarManager bossBarManager;
+    private GrapplingHookListener grapplingHookListener;
 
     @Override
     public void onEnable() {
@@ -48,7 +50,9 @@ public final class GodllyCore extends JavaPlugin {
         teleportListener = new TeleportListener(this);
         godmodeListener = new GodmodeListener(this);
         commandSpyListener = new CommandSpyListener(this);
+        grapplingHookListener = new GrapplingHookListener(this);
 
+        new AfkPlaceholder(this, afkListener).register();
         registerListeners();
         registerCommands();
 
@@ -69,6 +73,7 @@ public final class GodllyCore extends JavaPlugin {
                 new JoinQuitListener(this),
                 new FirstJoinListener(this),
                 new PlayerRespawnListener(this),
+                grapplingHookListener,
                 afkListener,
                 teleportListener,
                 godmodeListener,
