@@ -83,6 +83,8 @@ public class Core implements CommandExecutor {
                 plugin.getCommandSpyListener(),
                 plugin.getGodModeListener(),
                 plugin.getTeleportListener(),
+                new MuteChatListener(plugin),
+                new ChatFilterListener(plugin),
                 new JoinQuitListener(plugin),
                 new CustomDeathMessageListener(plugin),
                 new PlayerRespawnListener(plugin),
@@ -90,7 +92,8 @@ public class Core implements CommandExecutor {
                 new EssentialCommand(plugin),
                 new FullInventoryListener(plugin),
                 new ItemDropListener(plugin.getDropCommand()),
-                new CommandListener()
+                new CommandListener(),
+                new FallingBlockListener()
         );
 
         for (Listener listener : listeners) {

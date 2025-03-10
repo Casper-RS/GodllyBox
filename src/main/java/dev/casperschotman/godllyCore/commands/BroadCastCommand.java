@@ -30,6 +30,7 @@ public class BroadCastCommand implements CommandExecutor {
 		message = ChatColor.translateAlternateColorCodes('&', message);
 
 		// Broadcast to all players
+
 		Bukkit.broadcastMessage(" ");
 		Bukkit.broadcastMessage(getPrefix() + ChatColor.RESET + message);
 		Bukkit.broadcastMessage(" ");
