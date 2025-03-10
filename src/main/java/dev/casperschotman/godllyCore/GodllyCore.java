@@ -88,6 +88,7 @@ public final class GodllyCore extends JavaPlugin {
     private void registerCommands() {
         getCommand("broadcast").setExecutor(new BroadCastCommand());
         getCommand("tutorial").setExecutor(new TutorialCommand(this));
+        getCommand("balcheck").setExecutor(new BalCheckCommand(this));
         // Essential Commands
         EssentialCommand essentialsCommands = new EssentialCommand(this);
         essentialsCommands.registerCommands();
