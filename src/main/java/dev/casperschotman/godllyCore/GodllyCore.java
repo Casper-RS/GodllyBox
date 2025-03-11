@@ -69,11 +69,14 @@ public final class GodllyCore extends JavaPlugin {
         List<Object> listeners = Arrays.asList(
                 new CommandListener(),
                 new ItemDropListener(dropCommand),
+                new MuteChatListener(this),
+                new ChatFilterListener(this),
                 new FullInventoryListener(this),
                 new CustomDeathMessageListener(this),
                 new JoinQuitListener(this),
                 new FirstJoinListener(this),
                 new PlayerRespawnListener(this),
+                new FallingBlockListener(),
                 afkListener,
                 teleportListener,
                 godmodeListener,
@@ -86,10 +89,20 @@ public final class GodllyCore extends JavaPlugin {
     }
 
     private void registerCommands() {
+        getCommand("seen").setExecutor(new SeenCommand());
+        getCommand("offhand").setExecutor(new OffhandCommand());
+        getCommand("prefix").setExecutor(new PrefixCommand());
+        getCommand("prefix").setTabCompleter(new PrefixTabCompleter());
+        getCommand("shout").setExecutor(new ShoutCommand());
         getCommand("broadcast").setExecutor(new BroadCastCommand());
         getCommand("tutorial").setExecutor(new TutorialCommand(this));
         getCommand("balcheck").setExecutor(new BalCheckCommand(this));
         getCommand("invsee").setExecutor(new InvSeeCommand(this));
+
+        getCommand("clearchat").setExecutor(new ChatManager(this));
+        getCommand("mutechat").setExecutor(new ChatManager(this));
+        getCommand("sign").setExecutor(new SignCommand());
+        getCommand("ad").setExecutor(new AdvertiseCommand());
 
         // Essential Commands
         EssentialCommand essentialsCommands = new EssentialCommand(this);

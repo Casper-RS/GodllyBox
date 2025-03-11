@@ -27,11 +27,11 @@ messages:
 # Default spawn & respawn on death location.
 death:
   spawn:
-    world: "new1"
-    x: 4.5
-    y: -59
-    z: 3.5
-    yaw: 90
+    world: "s5"
+    x: 100.5
+    y: -58
+    z: 306.5
+    yaw: 180
     pitch: 0
 
 # Message and give items to a player when he joins for the first time
@@ -46,10 +46,20 @@ first-join:
     - material: STONE_AXE
       name: "&7Starter Axe"
 
-#Tutorial delay between messages
+# Tutorial configuration
 tutorial:
   title-fade-in: 10      # Time (ticks) for the title to fade in (10 ticks = 0.5 sec)
   title-stay: 40         # Time (ticks) the title stays visible (40 ticks = 2 sec)
   title-fade-out: 10     # Time (ticks) for the title to fade out (10 ticks = 0.5 sec)
   chat-start-delay: 60   # Delay (ticks) before chat messages start (60 ticks = 3 sec)
   message-interval: 70   # Delay (ticks) between chat messages (70 ticks = 3.5 sec)
+
+# Chat Filter. This filter also includes partly typed words
+# So for example "nigger" and "nig" both
+# get blocked when "nigger" is added.
+chat-filter:
+  enabled: true
+  blocked-words:
+    - "nig"
+    - "fuck"
+  warning-message: "&cYour message contains prohibited words and was not sent!"

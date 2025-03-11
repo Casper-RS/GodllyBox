@@ -18,7 +18,7 @@ public class CommandListener implements Listener {
         // Check if the command is in the blocked list
         for (String blockedCommand : blockedCommands) {
             if (command.equalsIgnoreCase(blockedCommand)) {
-                if (!event.getPlayer().hasPermission("godllybox.viewplugins")) {
+                if (!event.getPlayer().hasPermission("godllycore.viewplugins")) {
                     event.setCancelled(true);
                     event.getPlayer().sendMessage("§cYou do not have permission to use this command.");
                     return;

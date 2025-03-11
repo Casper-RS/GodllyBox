@@ -15,6 +15,13 @@ commands:
     usage: /invsee <player>
     permission: godllycore.invsee.view
     permission-message: You don't have permission to use this command.
+  clearchat:
+    description: Clear chat for all players
+    aliases: [cc]
+    permission: godllycore.chat.clear
+  mutechat:
+    description: Mute/unmute chat
+    permission: godllycore.chat.mute
 
   core:
     description: Core commands for GodllyBox.
@@ -135,8 +142,46 @@ commands:
     description: Toggle command spying
     usage: /cspy <on/off>
     permission: godllycore.essentials.cspy
-
+  sign:
+    description: Signs an item with your name.
+    permission: godllycore.staffsign
+  admsg:
+    description: Sends clickable advertisement messages.
+  prefix:
+    description: Set or remove your custom prefix.
+    permission: godllycore.customprefix
+    permission-message: "&cYou don't have the correct permissions."
+  shout:
+    description: Broadcast a message to all players with a cooldown.
+    permission: godllycore.shout
+    permission-message: "&cYou don't have the correct permissions."
+  offhand:
+    description: Swap items between your main hand and offhand.
+    permission: godllycore.offhand.use
+    permission-message: "&cYou don't have the correct permissions."
+  seen:
+    description: Check when a player was last online
+    permission: godllycore.seen.use
+  ad:
+    description: Send advertise message
+    permission: godllycore.advertise
 permissions:
+  godllycore.advertise:
+    description: Send advertise message
+    default: true
+
+  godllycore.seen.use:
+    description: Check when a player was last online
+    default: op
+
+  godllycore.offhand.use:
+    description: Put something in your offhand
+    default: true
+
+  godllycore.staffsign:
+    description: Signs an item with your name.
+    default: op
+
   godllycore.fly:
     description: Allows players to toggle fly mode
     default: op
@@ -163,8 +208,8 @@ permissions:
     children:
       godllycore.core.reload: true
       godllycore.core.info: true
-      godllybox.clearlag: true
-      godllybox.core.restart: true
+      godllycore.clearlag: true
+      godllycore.core.restart: true
 
   godllycore.core.reload:
     description: Allows reloading the config
@@ -296,10 +341,21 @@ permissions:
     description: Allows resetting the tutorial progress
     default: op
 
+
   godllycore.invsee.view:
     description: Allows viewing other players' inventories.
     default: op
     
   godllycore.invsee.edit:
     description: Allows modifying other players' inventories.
+    default: op
+
+  godllycore.chat.clear:
+    description: Clear the chat
+    default: op
+  godllycore.chat.mute:
+    description: Mute the chat
+    default: op
+  godllycore.chat.bypass:
+    description: Bypass muted chat
     default: op
