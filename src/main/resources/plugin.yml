@@ -10,6 +10,11 @@ commands:
     description: Check your balance
     usage: /balcheck
     permission: myplugin.balcheck
+  invsee:
+    description: Allows viewing another player's inventory.
+    usage: /invsee <player>
+    permission: godllycore.invsee.view
+    permission-message: You don't have permission to use this command.
 
   core:
     description: Core commands for GodllyBox.
@@ -289,4 +294,12 @@ permissions:
 
   godllycore.tutorial.reset:
     description: Allows resetting the tutorial progress
+    default: op
+
+  godllycore.invsee.view:
+    description: Allows viewing other players' inventories.
+    default: op
+    
+  godllycore.invsee.edit:
+    description: Allows modifying other players' inventories.
     default: op
